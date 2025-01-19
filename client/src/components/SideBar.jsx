@@ -22,11 +22,20 @@ import MailIcon from "@mui/icons-material/Mail";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import AllData from "../pages/AllData";
-import AddEditData from "../pages/AddEditData";
 import TableChartIcon from "@mui/icons-material/TableChart";
-import BorderColorIcon from "@mui/icons-material/BorderColor";
 import AcUnitIcon from "@mui/icons-material/AcUnit";
+import AllData from "../pages/Refine/AllData";
+import AddEditData from "../pages/Refine/AddEditData";
+import { useState } from "react";
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
+import TravelExploreIcon from '@mui/icons-material/TravelExplore';
+import AllProductData from "../pages/Aerio/AllProductData";
+import AddEditProductData from "../pages/Aerio/AddEditProductData";
+import AllOrderData from "../pages/Aerio/AllOrderData";
+import BackupTableIcon from '@mui/icons-material/BackupTable';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import AllPaymentData from "../pages/Aerio/AllPaymentData";
+import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 
 const drawerWidth = 240;
 
@@ -96,8 +105,10 @@ const Drawer = styled(MuiDrawer, {
 
 export default function MiniDrawer() {
   const theme = useTheme();
-  const [open, setOpen] = React.useState(false);
-  const [refineOpen, setRefineOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const [refineOpen, setRefineOpen] = useState(false);
+  const [aerioOpen, setAerioOpen] = useState(false);
+
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -109,6 +120,10 @@ export default function MiniDrawer() {
 
   const handleRefineClick = () => {
     setRefineOpen(!refineOpen);
+  };
+
+  const handleAerioClick = () => {
+    setAerioOpen(!aerioOpen);
   };
 
   return (
@@ -149,7 +164,7 @@ export default function MiniDrawer() {
             <ListItem disablePadding>
               <ListItemButton onClick={handleRefineClick}>
                 <ListItemIcon>
-                  <AcUnitIcon sx={{ color: "#f2f2f2" }} />
+                  <RocketLaunchIcon sx={{ color: "#f2f2f2" }} />
                 </ListItemIcon>
                 <ListItemText primary="Refine" />
                 {refineOpen ? <ExpandLess /> : <ExpandMore />}
@@ -157,11 +172,50 @@ export default function MiniDrawer() {
             </ListItem>
             <Collapse in={refineOpen} timeout="auto" unmountOnExit>
               <List component="div" disablePadding>
-                <ListItemButton component={Link} to="/">
+                <ListItemButton component={Link} to="/refine">
                   <ListItemIcon>
-                    <TableChartIcon sx={{ color: "#f2f2f2" }} />
+                    <BackupTableIcon sx={{ color: "#f2f2f2" }} />
                   </ListItemIcon>
-                  <ListItemText primary="All Data" />
+                  <ListItemText primary="All Articles" />
+                </ListItemButton>
+              </List>
+            </Collapse>
+            <Divider />
+            <ListItem disablePadding></ListItem>
+          </List>
+          <List>
+            <ListItem disablePadding>
+              <ListItemButton onClick={handleAerioClick}>
+                <ListItemIcon>
+                  <TravelExploreIcon sx={{ color: "#f2f2f2" }} />
+                </ListItemIcon>
+                <ListItemText primary="Aerio" />
+                {aerioOpen ? <ExpandLess /> : <ExpandMore />}
+              </ListItemButton>
+            </ListItem>
+            <Collapse in={aerioOpen} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
+                <ListItemButton component={Link} to="/aerio">
+                  <ListItemIcon>
+                    <BackupTableIcon sx={{ color: "#f2f2f2" }} />
+                  </ListItemIcon>
+                  <ListItemText primary="All Products" />
+                </ListItemButton>
+              </List>
+              <List component="div" disablePadding>
+                <ListItemButton component={Link} to="/aerio/orders">
+                  <ListItemIcon>
+                    <ShoppingCartIcon sx={{ color: "#f2f2f2" }} />
+                  </ListItemIcon>
+                  <ListItemText primary="All Orders" />
+                </ListItemButton>
+              </List>
+              <List component="div" disablePadding>
+                <ListItemButton component={Link} to="/aerio/payments">
+                  <ListItemIcon>
+                    <RequestQuoteIcon sx={{ color: "#f2f2f2" }} />
+                  </ListItemIcon>
+                  <ListItemText primary="All Payments" />
                 </ListItemButton>
               </List>
             </Collapse>
@@ -173,8 +227,18 @@ export default function MiniDrawer() {
           <DrawerHeader />
           <Routes>
             <Route path="/" element={<AllData />} />
-            <Route path="/add" element={<AddEditData />} />
-            <Route path="/edit/:id" element={<AddEditData />} />
+
+            <Route path="/refine" element={<AllData />} />
+            <Route path="/refine/add" element={<AddEditData />} />
+            <Route path="/refine/edit/:id" element={<AddEditData />} />
+
+            <Route path="/aerio" element={<AllProductData />} />
+            <Route path="/aerio/add" element={<AddEditProductData />} />
+            <Route path="/aerio/edit/:id" element={<AddEditProductData />} />
+            <Route path="/aerio/orders" element={<AllOrderData />} />
+            <Route path="/aerio/payments" element={<AllPaymentData />} />
+
+
           </Routes>
         </Box>
       </Box>

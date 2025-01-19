@@ -22,7 +22,7 @@ import LockOpenIcon from "@mui/icons-material/LockOpen";
 import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
 import ModeStandbyIcon from "@mui/icons-material/ModeStandby";
 
-const AllData = () => {
+const AllOrderData = () => {
   const [rows, setRows] = useState([]);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -34,7 +34,7 @@ const AllData = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get("http://localhost:5050/api/data")
+      .get(`http://localhost:5050/api/data/${"aerio_orders"}`)
       .then((response) => {
         const data = response.data.data;
         const updatedData = data.map((item) => ({
@@ -69,24 +69,13 @@ const AllData = () => {
                     <DriveFileRenameOutlineIcon sx={{ color: "#f2f2f2" }} />
                   </IconButton>
                 </Tooltip> */}
-                <Tooltip
-                  title={
-                    params.row.active === true || params.row.active === "true"
-                      ? "Mark as Inactive"
-                      : "Mark as Active"
-                  }
-                >
+                <Tooltip title={"Delete Order"}>
                   <IconButton
                     onClick={() =>
                       handleToggleActive(params.row._id, params.row.active)
                     }
                   >
-                    {params.row.active === true ||
-                    params.row.active === "true" ? (
-                      <LockOpenIcon sx={{ color: "#f2f2f2" }} />
-                    ) : (
-                      <LockIcon sx={{ color: "#f2f2f2" }} />
-                    )}
+                    <DeleteIcon sx={{ color: "#f2f2f2" }} />
                   </IconButton>
                 </Tooltip>
               </>
@@ -106,16 +95,19 @@ const AllData = () => {
   }, [loading]);
 
   const handleEdit = (id) => {
-    navigate(`/edit/${id}`);
+    navigate(`/aerio/edit/${id}`);
   };
 
   const handleToggleActive = async (id, currentStatus) => {
     try {
       setLoading(true);
       const newStatus = !currentStatus;
-      const response = await axios.put(`http://localhost:5050/api/data/${id}`, {
-        active: newStatus,
-      });
+      const response = await axios.delete(
+        `http://localhost:5050/api/data/${"aerio_orders"}/${id}`,
+        {
+          active: newStatus,
+        }
+      );
       if (response.data.status) {
         setRows(
           rows.map((row) =>
@@ -144,12 +136,12 @@ const AllData = () => {
   };
 
   const handleAddData = () => {
-    navigate("/add");
+    navigate("/aerio/add");
   };
 
   return (
     <Grid container spacing={3} sx={{ padding: 3 }}>
-      <Grid item xs={12}>
+      {/* <Grid item xs={12}>
         <Button
           variant="contained"
           color="primary"
@@ -157,9 +149,9 @@ const AllData = () => {
           onClick={handleAddData}
           disabled={loading}
         >
-          Add Data
+          Add Product
         </Button>
-      </Grid>
+      </Grid> */}
       <Grid item xs={12}>
         {loading ? (
           <Box
@@ -186,7 +178,7 @@ const AllData = () => {
               columns={columns}
               getRowId={(row) => row._id}
               autoHeight
-              onRowDoubleClick={(params) => handleEdit(params.row._id)}
+              //   onRowDoubleClick={(params) => handleEdit(params.row._id)}
             />
           </div>
         )}
@@ -208,4 +200,4 @@ const AllData = () => {
   );
 };
 
-export default AllData;
+export default AllOrderData;

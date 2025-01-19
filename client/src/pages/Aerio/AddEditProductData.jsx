@@ -25,9 +25,9 @@ import NorthWestIcon from "@mui/icons-material/NorthWest";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import CircularProgress from "@mui/material/CircularProgress";
-import ReportIcon from '@mui/icons-material/Report';
+import ReportIcon from "@mui/icons-material/Report";
 
-const AddEditData = () => {
+const AddEditProductData = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
@@ -43,12 +43,11 @@ const AddEditData = () => {
   const [loadingAI, setLoadingAI] = useState(false);
 
   const [initialValues, setInitialValues] = useState({
-    title: "",
-    shortTitle: "",
-    author: "",
+    name: "",
     shortDesc: "",
     LongDesc: "",
     category: "",
+    price: 0,
     image: null,
     active: true, // default active status to true
   });
@@ -58,12 +57,11 @@ const AddEditData = () => {
   const formik = useFormik({
     initialValues: initialValues,
     validationSchema: Yup.object({
-      title: Yup.string().required("Title is required"),
-      shortTitle: Yup.string().required("Short Title is required"),
-      author: Yup.string().required("Author is required"),
+      name: Yup.string().required("Name is required"),
       shortDesc: Yup.string().required("Short description is required"),
       LongDesc: Yup.string().required("Long description is required"),
       category: Yup.string().required("Category is required"),
+      price: Yup.string().required("Price is required"),
       image: Yup.mixed()
         .nullable()
         .test("fileFormat", "Unsupported file format", (value) => {
@@ -102,8 +100,8 @@ const AddEditData = () => {
       try {
         const method = id ? "put" : "post";
         const url = id
-          ? `http://localhost:5050/api/data/${id}`
-          : `http://localhost:5050/api/data`;
+          ? `http://localhost:5050/api/data/${"aerio_product"}/${id}`
+          : `http://localhost:5050/api/data/${"aerio_product"}`;
 
         await axios({
           method,
@@ -115,7 +113,7 @@ const AddEditData = () => {
         });
 
         setIsSubmitting(false);
-        navigate("/"); // Navigate to the list page after successful submission
+        navigate("/aerio"); // Navigate to the list page after successful submission
       } catch (error) {
         console.error("Error submitting form:", error);
         setIsSubmitting(false);
@@ -127,18 +125,17 @@ const AddEditData = () => {
   useEffect(() => {
     if (id) {
       axios
-        .get(`http://localhost:5050/api/data/${id}`)
+        .get(`http://localhost:5050/api/data/${"aerio_product"}/${id}`)
         .then((response) => {
           const data = response.data.data;
           // Update the formik values with fetched data
           setExistingImage(data.imageName); // Save existing image name for backend processing
           setInitialValues({
-            title: data.title,
-            shortTitle: data.shortTitle,
-            author: data.author,
+            name: data.name,
             shortDesc: data.shortDesc,
             LongDesc: data.LongDesc,
             category: data.category,
+            price: data.price,
             image: null, // Reset to null to handle new image upload separately
             active: data.active, // Fetch the active status
           });
@@ -157,10 +154,12 @@ const AddEditData = () => {
 
     try {
       setIsSubmitting(true);
-      await axios.delete(`http://localhost:5050/api/data/${id}`);
+      await axios.delete(
+        `http://localhost:5050/api/data/${"aerio_product"}/${id}`
+      );
       setIsSubmitting(false);
       setOpenDeleteDialog(false); // Close the dialog after deletion
-      navigate("/"); // Navigate back to the list page
+      navigate("/aerio"); // Navigate back to the list page
     } catch (error) {
       console.error("Error deleting record:", error);
       setIsSubmitting(false);
@@ -212,7 +211,7 @@ const AddEditData = () => {
           variant="contained"
           color="primary"
           startIcon={<NorthWestIcon />}
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/aerio")}
         >
           Back
         </Button>
@@ -227,8 +226,8 @@ const AddEditData = () => {
           boxShadow: 2,
         }}
       >
-        <Typography variant="h5" gutterBottom align="center">
-          {id ? "Update Data" : "Add New Data"}
+        <Typography variant="h5" gutterBottom align="center" sx={{ mb: 3 }}>
+          {id ? "Update Product" : "Add New Product"}
         </Typography>
         <form onSubmit={formik.handleSubmit}>
           <Grid container spacing={3}>
@@ -236,45 +235,13 @@ const AddEditData = () => {
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label="Title"
-                name="title"
-                value={formik.values.title}
+                label="Name"
+                name="name"
+                value={formik.values.name}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                error={formik.touched.title && Boolean(formik.errors.title)}
-                helperText={formik.touched.title && formik.errors.title}
-              />
-            </Grid>
-
-            {/* Short Title Field */}
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Short Title"
-                name="shortTitle"
-                value={formik.values.shortTitle}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={
-                  formik.touched.shortTitle && Boolean(formik.errors.shortTitle)
-                }
-                helperText={
-                  formik.touched.shortTitle && formik.errors.shortTitle
-                }
-              />
-            </Grid>
-
-            {/* Author Field */}
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Author"
-                name="author"
-                value={formik.values.author}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={formik.touched.author && Boolean(formik.errors.author)}
-                helperText={formik.touched.author && formik.errors.author}
+                error={formik.touched.name && Boolean(formik.errors.name)}
+                helperText={formik.touched.name && formik.errors.name}
               />
             </Grid>
 
@@ -296,6 +263,7 @@ const AddEditData = () => {
 
             <Grid item xs={12}>
               <TextField
+                variant="filled"
                 fullWidth
                 label="AI Prompt for Long Description"
                 value={aiPrompt}
@@ -360,6 +328,20 @@ const AddEditData = () => {
               />
             </Grid>
 
+            {/* Price Field */}
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Price"
+                name="price"
+                value={formik.values.price}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.category && Boolean(formik.errors.price)}
+                helperText={formik.touched.category && formik.errors.price}
+              />
+            </Grid>
+
             {/* Active Switch */}
             <Grid item xs={12}>
               <FormControlLabel
@@ -396,7 +378,7 @@ const AddEditData = () => {
             {/* File Upload for new image */}
             <Grid item xs={12}>
               <Typography variant="body1" gutterBottom>
-                Thumbnail Image
+                Product Image
               </Typography>
               <Button
                 variant="outlined"
@@ -481,10 +463,14 @@ const AddEditData = () => {
         onClose={() => setOpenDeleteDialog(false)}
       >
         <DialogTitle>
-        <Box display={'flex'} justifyContent={'start'} gap={1} alignItems={'center'}>
-
-        Confirm Deletion <ReportIcon/>
-        </Box>
+          <Box
+            display={"flex"}
+            justifyContent={"start"}
+            gap={1}
+            alignItems={"center"}
+          >
+            Confirm Deletion <ReportIcon />
+          </Box>
         </DialogTitle>
         <DialogContent>
           <Typography variant="body1">
@@ -508,4 +494,4 @@ const AddEditData = () => {
   );
 };
 
-export default AddEditData;
+export default AddEditProductData;

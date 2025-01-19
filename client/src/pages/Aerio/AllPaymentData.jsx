@@ -109,8 +109,8 @@ const AllPaymentData = () => {
         }
       );
       if (response.data.status) {
-        setRows(
-          rows.map((row) =>
+        setRows((prevRows) =>
+          prevRows.map((row) =>
             row._id === id ? { ...row, active: newStatus } : row
           )
         );

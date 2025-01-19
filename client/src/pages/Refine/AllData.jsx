@@ -113,15 +113,19 @@ const AllData = () => {
     try {
       setLoading(true);
       const newStatus = !currentStatus;
-      const response = await axios.put(`https://blackcms.onrender.com/api/data/${"refine_article"}/${id}`, {
-        active: newStatus,
-      });
+      const response = await axios.put(
+        `https://blackcms.onrender.com/api/data/${"refine_article"}/${id}`,
+        {
+          active: newStatus,
+        }
+      );
       if (response.data.status) {
-        setRows(
-          rows.map((row) =>
+        setRows((prevRows) =>
+          prevRows.map((row) =>
             row._id === id ? { ...row, active: newStatus } : row
           )
         );
+
         setSnackbarMessage(
           `Data marked as ${newStatus ? "active" : "inactive"}!`
         );

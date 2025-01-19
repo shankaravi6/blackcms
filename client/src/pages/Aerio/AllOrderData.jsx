@@ -92,7 +92,7 @@ const AllOrderData = () => {
         setError("Failed to load data!");
         setLoading(false);
       });
-  }, [loading]);
+  }, []);
 
   const handleEdit = (id) => {
     navigate(`/aerio/edit/${id}`);

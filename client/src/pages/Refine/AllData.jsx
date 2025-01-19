@@ -103,7 +103,7 @@ const AllData = () => {
         setError("Failed to load data!");
         setLoading(false);
       });
-  }, [loading]);
+  }, []);
 
   const handleEdit = (id) => {
     navigate(`/refine/edit/${id}`);

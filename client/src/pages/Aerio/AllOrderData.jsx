@@ -34,13 +34,13 @@ const AllOrderData = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`http://localhost:5050/api/data/${"aerio_orders"}`)
+      .get(`https://blackcms.onrender.com/api/data/${"aerio_orders"}`)
       .then((response) => {
         const data = response.data.data;
         const updatedData = data.map((item) => ({
           ...item,
           imageUrl: item.imageName
-            ? `http://localhost:5050/uploads/${item.imageName}`
+            ? `https://blackcms.onrender.com/uploads/${item.imageName}`
             : "",
         }));
         setRows(updatedData);
@@ -103,7 +103,7 @@ const AllOrderData = () => {
       setLoading(true);
       const newStatus = !currentStatus;
       const response = await axios.delete(
-        `http://localhost:5050/api/data/${"aerio_orders"}/${id}`,
+        `https://blackcms.onrender.com/api/data/${"aerio_orders"}/${id}`,
         {
           active: newStatus,
         }

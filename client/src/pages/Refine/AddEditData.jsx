@@ -102,8 +102,8 @@ const AddEditData = () => {
       try {
         const method = id ? "put" : "post";
         const url = id
-          ? `http://localhost:5050/api/data/${"refine_article"}/${id}`
-          : `http://localhost:5050/api/data/${"refine_article"}`;
+          ? `https://blackcms.onrender.com/api/data/${"refine_article"}/${id}`
+          : `https://blackcms.onrender.com/api/data/${"refine_article"}`;
 
         await axios({
           method,
@@ -127,7 +127,7 @@ const AddEditData = () => {
   useEffect(() => {
     if (id) {
       axios
-        .get(`http://localhost:5050/api/data/${"refine_article"}/${id}`)
+        .get(`https://blackcms.onrender.com/api/data/${"refine_article"}/${id}`)
         .then((response) => {
           const data = response.data.data;
           // Update the formik values with fetched data
@@ -157,7 +157,7 @@ const AddEditData = () => {
 
     try {
       setIsSubmitting(true);
-      await axios.delete(`http://localhost:5050/api/data/${"refine_article"}/${id}`);
+      await axios.delete(`https://blackcms.onrender.com/api/data/${"refine_article"}/${id}`);
       setIsSubmitting(false);
       setOpenDeleteDialog(false); // Close the dialog after deletion
       navigate("/refine"); // Navigate back to the list page
@@ -180,7 +180,7 @@ const AddEditData = () => {
     setLoadingAI(true);
     try {
       const response = await axios.post(
-        "http://localhost:5050/api/generate-description",
+        "https://blackcms.onrender.com/api/generate-description",
         {
           prompt: aiPrompt,
         }
@@ -383,7 +383,7 @@ const AddEditData = () => {
                   Current Image:
                 </Typography>
                 <img
-                  src={`http://localhost:5050/uploads/${existingImage}`}
+                  src={`https://blackcms.onrender.com/uploads/${existingImage}`}
                   alt="Current"
                   style={{
                     width: "150px",

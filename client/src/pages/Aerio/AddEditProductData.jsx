@@ -100,8 +100,8 @@ const AddEditProductData = () => {
       try {
         const method = id ? "put" : "post";
         const url = id
-          ? `http://localhost:5050/api/data/${"aerio_product"}/${id}`
-          : `http://localhost:5050/api/data/${"aerio_product"}`;
+          ? `https://blackcms.onrender.com/api/data/${"aerio_product"}/${id}`
+          : `https://blackcms.onrender.com/api/data/${"aerio_product"}`;
 
         await axios({
           method,
@@ -125,7 +125,7 @@ const AddEditProductData = () => {
   useEffect(() => {
     if (id) {
       axios
-        .get(`http://localhost:5050/api/data/${"aerio_product"}/${id}`)
+        .get(`https://blackcms.onrender.com/api/data/${"aerio_product"}/${id}`)
         .then((response) => {
           const data = response.data.data;
           // Update the formik values with fetched data
@@ -155,7 +155,7 @@ const AddEditProductData = () => {
     try {
       setIsSubmitting(true);
       await axios.delete(
-        `http://localhost:5050/api/data/${"aerio_product"}/${id}`
+        `https://blackcms.onrender.com/api/data/${"aerio_product"}/${id}`
       );
       setIsSubmitting(false);
       setOpenDeleteDialog(false); // Close the dialog after deletion
@@ -179,7 +179,7 @@ const AddEditProductData = () => {
     setLoadingAI(true);
     try {
       const response = await axios.post(
-        "http://localhost:5050/api/generate-description",
+        "https://blackcms.onrender.com/api/generate-description",
         {
           prompt: aiPrompt,
         }
@@ -364,7 +364,7 @@ const AddEditProductData = () => {
                   Current Image:
                 </Typography>
                 <img
-                  src={`http://localhost:5050/uploads/${existingImage}`}
+                  src={`https://blackcms.onrender.com/uploads/${existingImage}`}
                   alt="Current"
                   style={{
                     width: "150px",

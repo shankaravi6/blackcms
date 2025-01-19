@@ -34,13 +34,13 @@ const AllData = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`http://localhost:5050/api/data/${"refine_article"}`)
+      .get(`https://blackcms.onrender.com/api/data/${"refine_article"}`)
       .then((response) => {
         const data = response.data.data;
         const updatedData = data.map((item) => ({
           ...item,
           imageUrl: item.imageName
-            ? `http://localhost:5050/uploads/${item.imageName}`
+            ? `https://blackcms.onrender.com/uploads/${item.imageName}`
             : "",
         }));
         setRows(updatedData);
@@ -113,7 +113,7 @@ const AllData = () => {
     try {
       setLoading(true);
       const newStatus = !currentStatus;
-      const response = await axios.put(`http://localhost:5050/api/data/${"refine_article"}/${id}`, {
+      const response = await axios.put(`https://blackcms.onrender.com/api/data/${"refine_article"}/${id}`, {
         active: newStatus,
       });
       if (response.data.status) {

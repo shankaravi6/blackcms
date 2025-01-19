@@ -34,13 +34,13 @@ const AllProductData = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`http://localhost:5050/api/data/${"aerio_product"}`)
+      .get(`https://blackcms.onrender.com/api/data/${"aerio_product"}`)
       .then((response) => {
         const data = response.data.data;
         const updatedData = data.map((item) => ({
           ...item,
           imageUrl: item.imageName
-            ? `http://localhost:5050/uploads/${item.imageName}`
+            ? `https://blackcms.onrender.com/uploads/${item.imageName}`
             : "",
         }));
         setRows(updatedData);
@@ -113,7 +113,7 @@ const AllProductData = () => {
     try {
       setLoading(true);
       const newStatus = !currentStatus;
-      const response = await axios.put(`http://localhost:5050/api/data/${"aerio_product"}/${id}`, {
+      const response = await axios.put(`https://blackcms.onrender.com/api/data/${"aerio_product"}/${id}`, {
         active: newStatus,
       });
       if (response.data.status) {

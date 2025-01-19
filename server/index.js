@@ -13,7 +13,7 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-mongoose.connect("mongodb://localhost:27017/refine", {
+mongoose.connect("mongodb+srv://shankaravi6india:Shankar_123@cms.fcweq.mongodb.net/?retryWrites=true&w=majority&appName=cms", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });

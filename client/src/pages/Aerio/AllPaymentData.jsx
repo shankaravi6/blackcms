@@ -34,13 +34,13 @@ const AllPaymentData = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`http://localhost:5050/api/data/${"aerio_payment"}`)
+      .get(`https://blackcms.onrender.com/api/data/${"aerio_payment"}`)
       .then((response) => {
         const data = response.data.data;
         const updatedData = data.map((item) => ({
           ...item,
           imageUrl: item.imageName
-            ? `http://localhost:5050/uploads/${item.imageName}`
+            ? `https://blackcms.onrender.com/uploads/${item.imageName}`
             : "",
         }));
         setRows(updatedData);
@@ -103,7 +103,7 @@ const AllPaymentData = () => {
       setLoading(true);
       const newStatus = !currentStatus;
       const response = await axios.delete(
-        `http://localhost:5050/api/data/${"aerio_payment"}/${id}`,
+        `https://blackcms.onrender.com/api/data/${"aerio_payment"}/${id}`,
         {
           active: newStatus,
         }

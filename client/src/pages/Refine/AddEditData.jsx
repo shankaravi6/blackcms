@@ -26,6 +26,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import CircularProgress from "@mui/material/CircularProgress";
 import ReportIcon from '@mui/icons-material/Report';
+import { BASE_URL } from "../../hooks/baseURL";
 
 const AddEditData = () => {
   const { id } = useParams();
@@ -102,8 +103,8 @@ const AddEditData = () => {
       try {
         const method = id ? "put" : "post";
         const url = id
-          ? `https://blackcms.onrender.com/api/data/${"refine_article"}/${id}`
-          : `https://blackcms.onrender.com/api/data/${"refine_article"}`;
+          ? `${BASE_URL}/api/data/${"refine_article"}/${id}`
+          : `${BASE_URL}/api/data/${"refine_article"}`;
 
         await axios({
           method,
@@ -127,7 +128,7 @@ const AddEditData = () => {
   useEffect(() => {
     if (id) {
       axios
-        .get(`https://blackcms.onrender.com/api/data/${"refine_article"}/${id}`)
+        .get(`${BASE_URL}/api/data/${"refine_article"}/${id}`)
         .then((response) => {
           const data = response.data.data;
           // Update the formik values with fetched data
@@ -157,7 +158,7 @@ const AddEditData = () => {
 
     try {
       setIsSubmitting(true);
-      await axios.delete(`https://blackcms.onrender.com/api/data/${"refine_article"}/${id}`);
+      await axios.delete(`${BASE_URL}/api/data/${"refine_article"}/${id}`);
       setIsSubmitting(false);
       setOpenDeleteDialog(false); // Close the dialog after deletion
       navigate("/refine"); // Navigate back to the list page
@@ -180,7 +181,7 @@ const AddEditData = () => {
     setLoadingAI(true);
     try {
       const response = await axios.post(
-        "https://blackcms.onrender.com/api/generate-description",
+        "${BASE_URL}/api/generate-description",
         {
           prompt: aiPrompt,
         }
@@ -383,7 +384,7 @@ const AddEditData = () => {
                   Current Image:
                 </Typography>
                 <img
-                  src={`https://blackcms.onrender.com/uploads/${existingImage}`}
+                  src={`${BASE_URL}/uploads/${existingImage}`}
                   alt="Current"
                   style={{
                     width: "150px",

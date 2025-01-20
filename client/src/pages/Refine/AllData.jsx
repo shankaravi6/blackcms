@@ -21,6 +21,7 @@ import LockIcon from "@mui/icons-material/Lock";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
 import ModeStandbyIcon from "@mui/icons-material/ModeStandby";
+import { BASE_URL } from "../../hooks/baseURL";
 
 const AllData = () => {
   const [rows, setRows] = useState([]);
@@ -34,13 +35,13 @@ const AllData = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`https://blackcms.onrender.com/api/data/${"refine_article"}`)
+      .get(`${BASE_URL}/api/data/${"refine_article"}`)
       .then((response) => {
         const data = response.data.data;
         const updatedData = data.map((item) => ({
           ...item,
           imageUrl: item.imageName
-            ? `https://blackcms.onrender.com/uploads/${item.imageName}`
+            ? `${BASE_URL}/uploads/${item.imageName}`
             : "",
         }));
         setRows(updatedData);
@@ -114,7 +115,7 @@ const AllData = () => {
       setLoading(true);
       const newStatus = !currentStatus;
       const response = await axios.put(
-        `https://blackcms.onrender.com/api/data/${"refine_article"}/${id}`,
+        `${BASE_URL}/api/data/${"refine_article"}/${id}`,
         {
           active: newStatus,
         }

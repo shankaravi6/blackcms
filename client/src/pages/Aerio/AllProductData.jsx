@@ -21,6 +21,7 @@ import LockIcon from "@mui/icons-material/Lock";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
 import ModeStandbyIcon from "@mui/icons-material/ModeStandby";
+import { BASE_URL } from "../../hooks/baseURL";
 
 const AllProductData = () => {
   const [rows, setRows] = useState([]);
@@ -34,13 +35,13 @@ const AllProductData = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`https://blackcms.onrender.com/api/data/${"aerio_product"}`)
+      .get(`${BASE_URL}/api/data/${"aerio_product"}`)
       .then((response) => {
         const data = response.data.data;
         const updatedData = data.map((item) => ({
           ...item,
           imageUrl: item.imageName
-            ? `https://blackcms.onrender.com/uploads/${item.imageName}`
+            ? `${BASE_URL}/uploads/${item.imageName}`
             : "",
         }));
         setRows(updatedData);
@@ -113,7 +114,7 @@ const AllProductData = () => {
     try {
       setLoading(true);
       const newStatus = !currentStatus;
-      const response = await axios.put(`https://blackcms.onrender.com/api/data/${"aerio_product"}/${id}`, {
+      const response = await axios.put(`${BASE_URL}/api/data/${"aerio_product"}/${id}`, {
         active: newStatus,
       });
       if (response.data.status) {

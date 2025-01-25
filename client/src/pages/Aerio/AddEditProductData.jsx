@@ -26,6 +26,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import CircularProgress from "@mui/material/CircularProgress";
 import ReportIcon from "@mui/icons-material/Report";
+import { BASE_URL } from "../../hooks/baseURL";
 
 const AddEditProductData = () => {
   const { id } = useParams();
@@ -100,8 +101,8 @@ const AddEditProductData = () => {
       try {
         const method = id ? "put" : "post";
         const url = id
-          ? `https://blackcms.onrender.com/api/data/${"aerio_product"}/${id}`
-          : `https://blackcms.onrender.com/api/data/${"aerio_product"}`;
+          ? `${BASE_URL}/api/data/${"aerio_product"}/${id}`
+          : `${BASE_URL}/api/data/${"aerio_product"}`;
 
         await axios({
           method,
@@ -125,7 +126,7 @@ const AddEditProductData = () => {
   useEffect(() => {
     if (id) {
       axios
-        .get(`https://blackcms.onrender.com/api/data/${"aerio_product"}/${id}`)
+        .get(`${BASE_URL}/api/data/${"aerio_product"}/${id}`)
         .then((response) => {
           const data = response.data.data;
           // Update the formik values with fetched data
@@ -155,7 +156,7 @@ const AddEditProductData = () => {
     try {
       setIsSubmitting(true);
       await axios.delete(
-        `https://blackcms.onrender.com/api/data/${"aerio_product"}/${id}`
+        `${BASE_URL}/api/data/${"aerio_product"}/${id}`
       );
       setIsSubmitting(false);
       setOpenDeleteDialog(false); // Close the dialog after deletion
@@ -179,7 +180,7 @@ const AddEditProductData = () => {
     setLoadingAI(true);
     try {
       const response = await axios.post(
-        "https://blackcms.onrender.com/api/generate-description",
+        `${BASE_URL}/api/generate-description`,
         {
           prompt: aiPrompt,
         }
@@ -364,7 +365,7 @@ const AddEditProductData = () => {
                   Current Image:
                 </Typography>
                 <img
-                  src={`https://blackcms.onrender.com/uploads/${existingImage}`}
+                  src={`${BASE_URL}/uploads/${existingImage}`}
                   alt="Current"
                   style={{
                     width: "150px",

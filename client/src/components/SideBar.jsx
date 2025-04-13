@@ -27,15 +27,22 @@ import AcUnitIcon from "@mui/icons-material/AcUnit";
 import AllData from "../pages/Refine/AllData";
 import AddEditData from "../pages/Refine/AddEditData";
 import { useState } from "react";
-import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
-import TravelExploreIcon from '@mui/icons-material/TravelExplore';
+import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
+import TravelExploreIcon from "@mui/icons-material/TravelExplore";
 import AllProductData from "../pages/Aerio/AllProductData";
 import AddEditProductData from "../pages/Aerio/AddEditProductData";
 import AllOrderData from "../pages/Aerio/AllOrderData";
-import BackupTableIcon from '@mui/icons-material/BackupTable';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import BackupTableIcon from "@mui/icons-material/BackupTable";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import AllPaymentData from "../pages/Aerio/AllPaymentData";
-import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
+import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
+import AllPromptData from "../pages/Propmtrix/AllPromptData";
+import AddEditPromptData from "../pages/Propmtrix/AddEditPromptData";
+import AllCateData from "../pages/Propmtrix/AllCateData";
+import AddEditCateData from "../pages/Propmtrix/AddEditCateData";
+import AssistantIcon from "@mui/icons-material/Assistant";
+import CategoryIcon from "@mui/icons-material/Category";
+import FeaturedPlayListIcon from "@mui/icons-material/FeaturedPlayList";
 
 const drawerWidth = 240;
 
@@ -108,7 +115,7 @@ export default function MiniDrawer() {
   const [open, setOpen] = useState(false);
   const [refineOpen, setRefineOpen] = useState(false);
   const [aerioOpen, setAerioOpen] = useState(false);
-
+  const [promptOpen, setPromptOpen] = useState(false);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -124,6 +131,10 @@ export default function MiniDrawer() {
 
   const handleAerioClick = () => {
     setAerioOpen(!aerioOpen);
+  };
+
+  const handlePromptrixClick = () => {
+    setPromptOpen(!promptOpen);
   };
 
   return (
@@ -145,7 +156,7 @@ export default function MiniDrawer() {
               <MenuIcon sx={{ color: "#f2f2f2" }} />
             </IconButton>
             <Typography variant="h6" noWrap component="div">
-              Black CMS
+              BLACK CMS
             </Typography>
           </Toolbar>
         </AppBar>
@@ -222,6 +233,37 @@ export default function MiniDrawer() {
             <Divider />
             <ListItem disablePadding></ListItem>
           </List>
+          <List>
+            <ListItem disablePadding>
+              <ListItemButton onClick={handlePromptrixClick}>
+                <ListItemIcon>
+                  <AssistantIcon sx={{ color: "#f2f2f2" }} />
+                </ListItemIcon>
+                <ListItemText primary="Promptrix" />
+                {promptOpen ? <ExpandLess /> : <ExpandMore />}
+              </ListItemButton>
+            </ListItem>
+            <Collapse in={promptOpen} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
+                <ListItemButton component={Link} to="/promptrix">
+                  <ListItemIcon>
+                    <BackupTableIcon sx={{ color: "#f2f2f2" }} />
+                  </ListItemIcon>
+                  <ListItemText primary="All Prompts" />
+                </ListItemButton>
+              </List>
+              <List component="div" disablePadding>
+                <ListItemButton component={Link} to="/promptrix/category">
+                  <ListItemIcon>
+                    <CategoryIcon sx={{ color: "#f2f2f2" }} />
+                  </ListItemIcon>
+                  <ListItemText primary="All Categories" />
+                </ListItemButton>
+              </List>
+            </Collapse>
+            <Divider />
+            <ListItem disablePadding></ListItem>
+          </List>
         </Drawer>
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
           <DrawerHeader />
@@ -238,7 +280,18 @@ export default function MiniDrawer() {
             <Route path="/aerio/orders" element={<AllOrderData />} />
             <Route path="/aerio/payments" element={<AllPaymentData />} />
 
-
+            <Route path="/promptrix" element={<AllPromptData />} />
+            <Route path="/promptrix/add" element={<AddEditPromptData />} />
+            <Route path="/promptrix/edit/:id" element={<AddEditPromptData />} />
+            <Route path="/promptrix/category" element={<AllCateData />} />
+            <Route
+              path="/promptrix/category/add"
+              element={<AddEditCateData />}
+            />
+            <Route
+              path="/promptrix/category/edit/:id"
+              element={<AddEditCateData />}
+            />
           </Routes>
         </Box>
       </Box>

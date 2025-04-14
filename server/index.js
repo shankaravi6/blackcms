@@ -202,6 +202,30 @@ app.get("/api/data/:collection/category/:category", async (req, res) => {
   }
 });
 
+app.get("/api/data/premdata/cate/:category", async (req, res) => {
+  const { category } = req.params;
+  const model = createDynamicModel("prem_promptrix_data");
+
+  try {
+    const data = await model
+      .find({
+        category: { $regex: new RegExp(`^${category}$`, "i") },
+      })
+      .select("title category price");
+
+    if (data.length > 0) {
+      res.json({ status: true, data });
+    } else {
+      res
+        .status(404)
+        .json({ status: false, error: "No data found for this category" });
+    }
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).json({ status: false, error: "Failed to fetch data" });
+  }
+});
+
 app.post("/api/generate-description", async (req, res) => {
   const { prompt } = req.body;
   if (!prompt) {

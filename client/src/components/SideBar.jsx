@@ -43,6 +43,9 @@ import AddEditCateData from "../pages/Propmtrix/AddEditCateData";
 import AssistantIcon from "@mui/icons-material/Assistant";
 import CategoryIcon from "@mui/icons-material/Category";
 import FeaturedPlayListIcon from "@mui/icons-material/FeaturedPlayList";
+import AllPremPromptData from "../pages/Propmtrix/AllPremPromptData";
+import AddEditPremPromptData from "../pages/Propmtrix/AddEditPremPromptData";
+import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
 
 const drawerWidth = 240;
 
@@ -253,6 +256,14 @@ export default function MiniDrawer() {
                 </ListItemButton>
               </List>
               <List component="div" disablePadding>
+                <ListItemButton component={Link} to="/prempromptrix">
+                  <ListItemIcon>
+                    <CurrencyExchangeIcon sx={{ color: "#f2f2f2" }} />
+                  </ListItemIcon>
+                  <ListItemText primary="All Premium Prompts" />
+                </ListItemButton>
+              </List>
+              <List component="div" disablePadding>
                 <ListItemButton component={Link} to="/promptrix/category">
                   <ListItemIcon>
                     <CategoryIcon sx={{ color: "#f2f2f2" }} />
@@ -283,6 +294,17 @@ export default function MiniDrawer() {
             <Route path="/promptrix" element={<AllPromptData />} />
             <Route path="/promptrix/add" element={<AddEditPromptData />} />
             <Route path="/promptrix/edit/:id" element={<AddEditPromptData />} />
+
+            <Route path="/prempromptrix" element={<AllPremPromptData />} />
+            <Route
+              path="/prempromptrix/add"
+              element={<AddEditPremPromptData />}
+            />
+            <Route
+              path="/prempromptrix/edit/:id"
+              element={<AddEditPremPromptData />}
+            />
+
             <Route path="/promptrix/category" element={<AllCateData />} />
             <Route
               path="/promptrix/category/add"

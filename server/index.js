@@ -325,8 +325,9 @@ app.post("/api/data/promptrix/stripe-payment/:collection", async (req, res) => {
       payment_method_types: ["card"],
       customer_email: email,
       mode: "payment",
-      success_url: "http://localhost:5173?session_id={CHECKOUT_SESSION_ID}",
-      cancel_url: "http://localhost:5173/",
+      success_url:
+        "https://promptrix.netlify.app?session_id={CHECKOUT_SESSION_ID}",
+      cancel_url: "https://promptrix.netlify.app/",
       line_items: lineItems,
     });
 

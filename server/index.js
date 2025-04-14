@@ -299,5 +299,134 @@ app.post("/api/data/stripe-payment/:collection", async (req, res) => {
   }
 });
 
+app.post("/api/data/promptrix/stripe-payment/:collection", async (req, res) => {
+  const { products, userName, email } = req.body;
+  console.log(products, userName, email);
+
+  if (!products || !userName || !email) {
+    return res
+      .status(400)
+      .json({ status: false, error: "All fields are required" });
+  }
+
+  try {
+    const lineItems = products.map((product) => ({
+      price_data: {
+        currency: "usd",
+        product_data: {
+          name: product.name,
+        },
+        unit_amount: Number(product.price) * 100,
+      },
+      quantity: product.count,
+    }));
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      customer_email: email,
+      mode: "payment",
+      success_url: "http://localhost:5173?session_id={CHECKOUT_SESSION_ID}",
+      cancel_url: "http://localhost:5173/",
+      line_items: lineItems,
+    });
+
+    // Save transaction data in MongoDB
+    const { collection } = req.params;
+    const model = createDynamicModel(collection);
+
+    const newData = new model({
+      ...req.body,
+      stripe_sessionid: session.id,
+    });
+
+    await newData.save();
+
+    res.json({ status: true, data: { sessionId: session.id } });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: false,
+      error: "An error occurred while processing your request",
+    });
+  }
+});
+
+app.post("/api/data/promptrix/verify-payment", async (req, res) => {
+  const { session_id } = req.body;
+
+  try {
+    const session = await stripe.checkout.sessions.retrieve(session_id);
+
+    if (session.payment_status === "paid") {
+      // You can also save the purchased prompt and user info to DB here
+      res.json({ status: "success", session });
+    } else {
+      res
+        .status(400)
+        .json({ status: "failed", message: "Payment not completed" });
+    }
+  } catch (error) {
+    console.error("Stripe verification error:", error);
+    res.status(500).json({ status: "error", message: "Internal Server Error" });
+  }
+});
+
+app.get("/api/data/promptrix/paidpromts/:email", async (req, res) => {
+  const email = req.params.email;
+
+  try {
+    const PaymentsModel = createDynamicModel("promptrix_payments_data");
+    const PromptModel = createDynamicModel("prem_promptrix_data");
+
+    const payments = await PaymentsModel.find({ email });
+
+    if (!payments || payments.length === 0) {
+      return res.status(404).json({
+        status: "not_found",
+        message: "No payments found for this email",
+      });
+    }
+
+    const allProducts = [];
+
+    for (const payment of payments) {
+      for (const product of payment.products) {
+        try {
+          const promptDoc = await PromptModel.findOne({ _id: product.id });
+
+          allProducts.push({
+            title: product.name,
+            price: product.price,
+            id: product.id,
+            prompt: promptDoc?.prompt || "Prompt not found",
+            userName: payment.userName,
+            email: payment.email,
+          });
+        } catch (err) {
+          allProducts.push({
+            title: product.name,
+            price: product.price,
+            id: product.id,
+            prompt: "Prompt not found",
+            userName: payment.userName,
+            email: payment.email,
+          });
+        }
+      }
+    }
+
+    res.json({
+      status: "success",
+      data: allProducts,
+    });
+  } catch (error) {
+    console.error("Error fetching enriched prompt list:", error);
+    res.status(500).json({
+      status: "error",
+      message: "Internal Server Error",
+    });
+  }
+});
+
 const PORT = 5050;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

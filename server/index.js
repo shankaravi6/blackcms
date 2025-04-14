@@ -5,18 +5,23 @@ import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 import OpenAI from "openai";
-import Stripe from 'stripe';
-const stripe = new Stripe('sk_test_51OPpYOSF01MmEgFzAZEgwHqPvMqevyujmyBp1M8JQk7pcDhJJg7QJh0aJyVv1hWRNU6pNDWuSRZzZPXiKAY00Rh100Wl6GwdLC');
+import Stripe from "stripe";
+const stripe = new Stripe(
+  "sk_test_51OPpYOSF01MmEgFzAZEgwHqPvMqevyujmyBp1M8JQk7pcDhJJg7QJh0aJyVv1hWRNU6pNDWuSRZzZPXiKAY00Rh100Wl6GwdLC"
+);
 
 const app = express();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-mongoose.connect("mongodb+srv://shankaravi6india:Shankar_123@cms.fcweq.mongodb.net/?retryWrites=true&w=majority&appName=cms", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+mongoose.connect(
+  "mongodb+srv://shankaravi6india:Shankar_123@cms.fcweq.mongodb.net/?retryWrites=true&w=majority&appName=cms",
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  }
+);
 
 const createDynamicModel = (collectionName) => {
   if (mongoose.models[collectionName]) {
@@ -75,47 +80,62 @@ app.post("/api/data/:collection", upload.single("image"), async (req, res) => {
   }
 });
 
-app.put("/api/data/:collection/:id", upload.single("image"), async (req, res) => {
-  const { collection, id } = req.params;
-  const model = createDynamicModel(collection);
+app.put(
+  "/api/data/:collection/:id",
+  upload.single("image"),
+  async (req, res) => {
+    const { collection, id } = req.params;
+    const model = createDynamicModel(collection);
 
-  try {
-    const dynamicFields = req.body;
-    const finalImageName = req.file ? req.file.filename : dynamicFields.imageName;
-    dynamicFields.imageName = finalImageName;
+    try {
+      const dynamicFields = req.body;
+      const finalImageName = req.file
+        ? req.file.filename
+        : dynamicFields.imageName;
+      dynamicFields.imageName = finalImageName;
 
-    const updatedData = await model.findByIdAndUpdate(id, dynamicFields, { new: true });
-    if (updatedData) {
-      res.json({ status: true, data: updatedData });
-    } else {
-      res.status(404).json({ status: false, error: "Data not found" });
+      const updatedData = await model.findByIdAndUpdate(id, dynamicFields, {
+        new: true,
+      });
+      if (updatedData) {
+        res.json({ status: true, data: updatedData });
+      } else {
+        res.status(404).json({ status: false, error: "Data not found" });
+      }
+    } catch (error) {
+      res.status(500).json({ status: false, error: "Failed to update data" });
     }
-  } catch (error) {
-    res.status(500).json({ status: false, error: "Failed to update data" });
   }
-});
+);
 
-app.patch("/api/data/:collection/:id", upload.single("image"), async (req, res) => {
-  const { collection, id } = req.params;
-  const model = createDynamicModel(collection);
+app.patch(
+  "/api/data/:collection/:id",
+  upload.single("image"),
+  async (req, res) => {
+    const { collection, id } = req.params;
+    const model = createDynamicModel(collection);
 
-  try {
-    const dynamicFields = req.body;
-    if (req.file) {
-      dynamicFields.imageName = req.file.filename;
+    try {
+      const dynamicFields = req.body;
+      if (req.file) {
+        dynamicFields.imageName = req.file.filename;
+      }
+
+      const updatedData = await model.findByIdAndUpdate(
+        id,
+        { $set: dynamicFields },
+        { new: true }
+      );
+      if (updatedData) {
+        res.json({ status: true, data: updatedData });
+      } else {
+        res.status(404).json({ status: false, error: "Data not found" });
+      }
+    } catch (error) {
+      res.status(500).json({ status: false, error: "Failed to update data" });
     }
-
-    const updatedData = await model.findByIdAndUpdate(id, { $set: dynamicFields }, { new: true });
-    if (updatedData) {
-      res.json({ status: true, data: updatedData });
-    } else {
-      res.status(404).json({ status: false, error: "Data not found" });
-    }
-  } catch (error) {
-    res.status(500).json({ status: false, error: "Failed to update data" });
   }
-});
-
+);
 
 app.get("/api/data/:collection", async (req, res) => {
   const { collection } = req.params;
@@ -161,6 +181,27 @@ app.delete("/api/data/:collection/:id", async (req, res) => {
   }
 });
 
+app.get("/api/data/:collection/category/:category", async (req, res) => {
+  const { collection, category } = req.params;
+  const model = createDynamicModel(collection);
+
+  try {
+    const data = await model.find({
+      category: { $regex: new RegExp(`^${category}$`, "i") },
+    });
+
+    if (data.length > 0) {
+      res.json({ status: true, data });
+    } else {
+      res
+        .status(404)
+        .json({ status: false, error: "No data found for this category" });
+    }
+  } catch (error) {
+    res.status(500).json({ status: false, error: "Failed to fetch data" });
+  }
+});
+
 app.post("/api/generate-description", async (req, res) => {
   const { prompt } = req.body;
   if (!prompt) {
@@ -175,16 +216,19 @@ app.post("/api/generate-description", async (req, res) => {
     const generatedText = completion.choices[0].message;
     res.json({ status: true, data: generatedText });
   } catch (error) {
-    res.status(500).json({ status: false, error: "Failed to generate description" });
+    res
+      .status(500)
+      .json({ status: false, error: "Failed to generate description" });
   }
 });
-
 
 app.post("/api/data/stripe-payment/:collection", async (req, res) => {
   const { products, userName, email } = req.body;
 
-  if (!products || !userName || !email ) {
-    return res.status(400).json({ status: false, error: "All fields are required" });
+  if (!products || !userName || !email) {
+    return res
+      .status(400)
+      .json({ status: false, error: "All fields are required" });
   }
 
   try {
@@ -199,7 +243,7 @@ app.post("/api/data/stripe-payment/:collection", async (req, res) => {
       quantity: product.count,
     }));
     console.log(lineItems);
-    console.log(email)
+    console.log(email);
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
@@ -211,17 +255,15 @@ app.post("/api/data/stripe-payment/:collection", async (req, res) => {
     });
     const responseSession = {
       sessionId: session.id,
-    }
+    };
 
     const { collection } = req.params;
     const model = createDynamicModel(collection);
 
-    
     const dynamicFields = req.body;
     dynamicFields.stripe_sessionid = session.id;
     const newData = new model(dynamicFields);
     await newData.save();
-    
 
     res.json({ status: true, data: responseSession });
   } catch (error) {

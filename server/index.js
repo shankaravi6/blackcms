@@ -17,8 +17,8 @@ const stripe = new Stripe(
 );
 
 const razorpayInstance = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
+  key_id: "rzp_live_uQXr5ROy3VcTsl",
+  key_secret: "OexBCB0bJmvVokHty9uNhrRp",
 });
 
 const app = express();
@@ -445,7 +445,7 @@ app.post(
     const { collection } = req.params;
 
     // Validate signature
-    const hmac = crypto.createHmac("sha256", process.env.RAZORPAY_KEY_SECRET);
+    const hmac = crypto.createHmac("sha256", "OexBCB0bJmvVokHty9uNhrRp");
     hmac.update(razorpay_order_id + "|" + razorpay_payment_id);
     const digest = hmac.digest("hex");
 

@@ -21,8 +21,8 @@ const razorpayInstance = new Razorpay({
   key_secret: RAZORPAY_KEY_SECRET,
 });
 
-app.use(cors());
 const app = express();
+app.use(cors());
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

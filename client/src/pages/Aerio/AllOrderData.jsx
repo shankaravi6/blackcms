@@ -115,9 +115,7 @@ const AllOrderData = () => {
             row._id === id ? { ...row, active: newStatus } : row
           )
         );
-        setSnackbarMessage(
-          `Data marked as ${newStatus ? "active" : "inactive"}!`
-        );
+        setSnackbarMessage(`Data deleted successfully!`);
         setOpenSnackbar(true);
       } else {
         setSnackbarMessage("Failed to update data status!");

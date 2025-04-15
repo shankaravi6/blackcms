@@ -23,7 +23,7 @@ import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
 import ModeStandbyIcon from "@mui/icons-material/ModeStandby";
 import { BASE_URL } from "../../hooks/baseURL";
 
-const AllPaymentData = () => {
+const AllPromptrixPaymentData = () => {
   const [rows, setRows] = useState([]);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -35,7 +35,7 @@ const AllPaymentData = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`${BASE_URL}/api/data/${"aerio_payment"}`)
+      .get(`${BASE_URL}/api/data/${"promptrix_payments_data"}`)
       .then((response) => {
         const data = response.data.data;
         const updatedData = data.map((item) => ({
@@ -104,7 +104,7 @@ const AllPaymentData = () => {
       setLoading(true);
       const newStatus = !currentStatus;
       const response = await axios.delete(
-        `${BASE_URL}/api/data/${"aerio_payment"}/${id}`,
+        `${BASE_URL}/api/data/${"promptrix_payments_data"}/${id}`,
         {
           active: newStatus,
         }
@@ -199,4 +199,4 @@ const AllPaymentData = () => {
   );
 };
 
-export default AllPaymentData;
+export default AllPromptrixPaymentData;

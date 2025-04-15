@@ -46,6 +46,8 @@ import FeaturedPlayListIcon from "@mui/icons-material/FeaturedPlayList";
 import AllPremPromptData from "../pages/Propmtrix/AllPremPromptData";
 import AddEditPremPromptData from "../pages/Propmtrix/AddEditPremPromptData";
 import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
+import AllPromptrixPaymentData from "../pages/Propmtrix/AllPromptrixPaymentData";
+import PaymentsIcon from "@mui/icons-material/Payments";
 
 const drawerWidth = 240;
 
@@ -271,6 +273,14 @@ export default function MiniDrawer() {
                   <ListItemText primary="All Categories" />
                 </ListItemButton>
               </List>
+              <List component="div" disablePadding>
+                <ListItemButton component={Link} to="/promptrix/payments">
+                  <ListItemIcon>
+                    <PaymentsIcon sx={{ color: "#f2f2f2" }} />
+                  </ListItemIcon>
+                  <ListItemText primary="All Payments" />
+                </ListItemButton>
+              </List>
             </Collapse>
             <Divider />
             <ListItem disablePadding></ListItem>
@@ -313,6 +323,10 @@ export default function MiniDrawer() {
             <Route
               path="/promptrix/category/edit/:id"
               element={<AddEditCateData />}
+            />
+            <Route
+              path="/promptrix/payments"
+              element={<AllPromptrixPaymentData />}
             />
           </Routes>
         </Box>

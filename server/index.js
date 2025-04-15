@@ -6,9 +6,20 @@ import path from "path";
 import { fileURLToPath } from "url";
 import OpenAI from "openai";
 import Stripe from "stripe";
+import Razorpay from "razorpay";
+import crypto from "crypto";
+import dotenv from "dotenv";
+
+dotenv.config();
+
 const stripe = new Stripe(
   "sk_test_51OPpYOSF01MmEgFzAZEgwHqPvMqevyujmyBp1M8JQk7pcDhJJg7QJh0aJyVv1hWRNU6pNDWuSRZzZPXiKAY00Rh100Wl6GwdLC"
 );
+
+const razorpayInstance = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
 
 const app = express();
 
@@ -181,51 +192,7 @@ app.delete("/api/data/:collection/:id", async (req, res) => {
   }
 });
 
-app.get("/api/data/:collection/category/:category", async (req, res) => {
-  const { collection, category } = req.params;
-  const model = createDynamicModel(collection);
-
-  try {
-    const data = await model.find({
-      category: { $regex: new RegExp(`^${category}$`, "i") },
-    });
-
-    if (data.length > 0) {
-      res.json({ status: true, data });
-    } else {
-      res
-        .status(404)
-        .json({ status: false, error: "No data found for this category" });
-    }
-  } catch (error) {
-    res.status(500).json({ status: false, error: "Failed to fetch data" });
-  }
-});
-
-app.get("/api/data/premdata/cate/:category", async (req, res) => {
-  const { category } = req.params;
-  const model = createDynamicModel("prem_promptrix_data");
-
-  try {
-    const data = await model
-      .find({
-        category: { $regex: new RegExp(`^${category}$`, "i") },
-      })
-      .select("title category price");
-
-    if (data.length > 0) {
-      res.json({ status: true, data });
-    } else {
-      res
-        .status(404)
-        .json({ status: false, error: "No data found for this category" });
-    }
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    res.status(500).json({ status: false, error: "Failed to fetch data" });
-  }
-});
-
+//Refine
 app.post("/api/generate-description", async (req, res) => {
   const { prompt } = req.body;
   if (!prompt) {
@@ -246,6 +213,7 @@ app.post("/api/generate-description", async (req, res) => {
   }
 });
 
+//Aerio
 app.post("/api/data/stripe-payment/:collection", async (req, res) => {
   const { products, userName, email } = req.body;
 
@@ -296,6 +264,52 @@ app.post("/api/data/stripe-payment/:collection", async (req, res) => {
       status: false,
       error: "An error occurred while processing your request",
     });
+  }
+});
+
+//Promptrix
+app.get("/api/data/:collection/category/:category", async (req, res) => {
+  const { collection, category } = req.params;
+  const model = createDynamicModel(collection);
+
+  try {
+    const data = await model.find({
+      category: { $regex: new RegExp(`^${category}$`, "i") },
+    });
+
+    if (data.length > 0) {
+      res.json({ status: true, data });
+    } else {
+      res
+        .status(404)
+        .json({ status: false, error: "No data found for this category" });
+    }
+  } catch (error) {
+    res.status(500).json({ status: false, error: "Failed to fetch data" });
+  }
+});
+
+app.get("/api/data/premdata/cate/:category", async (req, res) => {
+  const { category } = req.params;
+  const model = createDynamicModel("prem_promptrix_data");
+
+  try {
+    const data = await model
+      .find({
+        category: { $regex: new RegExp(`^${category}$`, "i") },
+      })
+      .select("title category price");
+
+    if (data.length > 0) {
+      res.json({ status: true, data });
+    } else {
+      res
+        .status(404)
+        .json({ status: false, error: "No data found for this category" });
+    }
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).json({ status: false, error: "Failed to fetch data" });
   }
 });
 
@@ -371,6 +385,105 @@ app.post("/api/data/promptrix/verify-payment", async (req, res) => {
     res.status(500).json({ status: "error", message: "Internal Server Error" });
   }
 });
+
+// Create Razorpay Order
+app.post(
+  "/api/data/promptrix/razorpay-payment/:collection",
+  async (req, res) => {
+    const { products, userName, email } = req.body;
+
+    if (!products || !userName || !email) {
+      return res
+        .status(400)
+        .json({ status: false, error: "All fields are required" });
+    }
+
+    try {
+      const totalAmount = products.reduce((acc, product) => {
+        return acc + product.price * product.count;
+      }, 0);
+
+      const options = {
+        amount: totalAmount * 100,
+        currency: "INR",
+        receipt: `receipt_order_${Date.now()}`,
+        notes: { userName, email },
+      };
+
+      const order = await razorpayInstance.orders.create(options);
+
+      res.json({
+        status: true,
+        data: {
+          orderId: order.id,
+          amount: options.amount,
+        },
+      });
+    } catch (error) {
+      console.error("Razorpay order error:", error);
+      res.status(500).json({
+        status: false,
+        error: "An error occurred while creating Razorpay order",
+      });
+    }
+  }
+);
+
+// Verify Razorpay Payment Signature
+app.post(
+  "/api/data/promptrix/razor-verify-payment/:collection",
+  async (req, res) => {
+    const {
+      razorpay_order_id,
+      razorpay_payment_id,
+      razorpay_signature,
+      products,
+      userName,
+      email,
+    } = req.body;
+
+    const { collection } = req.params;
+
+    // Validate signature
+    const hmac = crypto.createHmac("sha256", process.env.RAZORPAY_KEY_SECRET);
+    hmac.update(razorpay_order_id + "|" + razorpay_payment_id);
+    const digest = hmac.digest("hex");
+
+    if (digest !== razorpay_signature) {
+      return res.status(400).json({
+        status: "failed",
+        message: "Invalid payment signature",
+      });
+    }
+
+    try {
+      // Save data to MongoDB after successful verification
+      const model = createDynamicModel(collection);
+
+      const newData = new model({
+        products,
+        userName,
+        email,
+        razorpay_order_id,
+        razorpay_payment_id,
+        razorpay_signature,
+      });
+
+      await newData.save();
+
+      res.json({
+        status: "success",
+        message: "Payment verified and data saved",
+      });
+    } catch (err) {
+      console.error("DB Save Error:", err);
+      res.status(500).json({
+        status: "error",
+        message: "Payment verified but failed to store data",
+      });
+    }
+  }
+);
 
 app.get("/api/data/promptrix/paidpromts/:email", async (req, res) => {
   const email = req.params.email;

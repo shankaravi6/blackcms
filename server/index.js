@@ -17,8 +17,8 @@ const stripe = new Stripe(
 );
 
 const razorpayInstance = new Razorpay({
-  key_id: "rzp_live_uQXr5ROy3VcTsl",
-  key_secret: "OexBCB0bJmvVokHty9uNhrRp",
+  key_id: RAZORPAY_KEY_ID,
+  key_secret: RAZORPAY_KEY_SECRET,
 });
 
 const app = express();
@@ -67,12 +67,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-app.use(
-  cors({
-    origin: ["https://promptrix.netlify.app"],
-    credentials: true,
-  })
-);
+app.use();
 app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
@@ -450,7 +445,7 @@ app.post(
     const { collection } = req.params;
 
     // Validate signature
-    const hmac = crypto.createHmac("sha256", "OexBCB0bJmvVokHty9uNhrRp");
+    const hmac = crypto.createHmac("sha256", RAZORPAY_KEY_SECRET);
     hmac.update(razorpay_order_id + "|" + razorpay_payment_id);
     const digest = hmac.digest("hex");
 

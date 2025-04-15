@@ -22,7 +22,6 @@ const razorpayInstance = new Razorpay({
 });
 
 const app = express();
-app.use(cors());
 app.use(
   cors({
     origin: "https://blackcms.netlify.app",

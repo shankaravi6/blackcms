@@ -22,12 +22,6 @@ const razorpayInstance = new Razorpay({
 });
 
 const app = express();
-app.use(
-  cors({
-    origin: "https://blackcms.netlify.app",
-    credentials: true,
-  })
-);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

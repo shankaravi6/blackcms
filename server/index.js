@@ -67,7 +67,12 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-app.use(cors());
+app.use(
+  cors({
+    origin: ["https://promptrix.netlify.app"],
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 

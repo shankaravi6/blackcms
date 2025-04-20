@@ -21,6 +21,9 @@ const razorpayInstance = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
+const STATIC_USERNAME = "shankaravi";
+const STATIC_PASSWORD = "Optimus@1906";
+
 const app = express();
 
 const __filename = fileURLToPath(import.meta.url);
@@ -73,6 +76,17 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 const openai = new OpenAI({
   apiKey: "your-openai-api-key",
+});
+
+//login
+app.post("/api/login", (req, res) => {
+  const { username, password } = req.body;
+
+  if (username === STATIC_USERNAME && password === STATIC_PASSWORD) {
+    return res.json({ status: true, message: "Login successful" });
+  }
+
+  return res.json({ status: false, message: "Invalid credentials" });
 });
 
 app.post("/api/data/:collection", upload.single("image"), async (req, res) => {

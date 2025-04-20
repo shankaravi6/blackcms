@@ -48,6 +48,7 @@ import AddEditPremPromptData from "../pages/Propmtrix/AddEditPremPromptData";
 import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
 import AllPromptrixPaymentData from "../pages/Propmtrix/AllPromptrixPaymentData";
 import PaymentsIcon from "@mui/icons-material/Payments";
+import { Grid } from "@mui/material";
 
 const drawerWidth = 240;
 
@@ -142,6 +143,10 @@ export default function MiniDrawer() {
     setPromptOpen(!promptOpen);
   };
 
+  const handleLogout = async () => {
+    window.location.reload();
+  };
+
   return (
     <Router>
       <Box sx={{ display: "flex" }}>
@@ -160,9 +165,20 @@ export default function MiniDrawer() {
             >
               <MenuIcon sx={{ color: "#f2f2f2" }} />
             </IconButton>
-            <Typography variant="h6" noWrap component="div">
-              BLACK CMS
-            </Typography>
+            <div className="w-full justify-between flex">
+              <Typography variant="h6" noWrap component="div">
+                BLACK CMS
+              </Typography>
+              <Typography
+                onClick={() => handleLogout()}
+                variant="h6"
+                noWrap
+                component="div"
+                className="cursor-pointer"
+              >
+                Logout
+              </Typography>
+            </div>
           </Toolbar>
         </AppBar>
         <Drawer variant="permanent" open={open}>

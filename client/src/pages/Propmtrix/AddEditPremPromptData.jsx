@@ -49,6 +49,7 @@ const AddEditPremPromptData = () => {
     prompt: "",
     price: "",
     category: "",
+    image: null,
     active: true, // default active status to true
   });
   const [promptCate, setPromptCate] = useState(["Logo", "Image"]);
@@ -62,6 +63,16 @@ const AddEditPremPromptData = () => {
       prompt: Yup.string().required("Prompt is required"),
       price: Yup.string().required("Price is required"),
       category: Yup.string().required("Category is required"),
+      image: Yup.mixed()
+        .nullable()
+        .test("fileFormat", "Unsupported file format", (value) => {
+          if (!value) return true; // If no file, it's allowed
+          return ["image/jpeg", "image/png", "image/jpg"].includes(value.type);
+        })
+        .test("fileSize", "File size is too large", (value) => {
+          if (!value) return true;
+          return value.size <= 5 * 1024 * 1024; // Limit to 5MB
+        }),
     }),
     enableReinitialize: true,
     onSubmit: async (values) => {
@@ -76,6 +87,16 @@ const AddEditPremPromptData = () => {
           formData.append(key, values[key]);
         }
       });
+
+      // Add a new image if one was uploaded
+      if (values.image) {
+        formData.append("image", values.image); // New image uploaded
+      }
+
+      // If no new image and we're in edit mode, append the existing image name
+      if (!values.image && existingImage) {
+        formData.append("existingImage", existingImage); // Existing image
+      }
 
       try {
         const method = id ? "put" : "post";
@@ -285,6 +306,56 @@ const AddEditPremPromptData = () => {
                   />
                 )}
               />
+            </Grid>
+
+            {existingImage && (
+              <Grid item xs={12}>
+                <Typography variant="body1" gutterBottom>
+                  Current Image:
+                </Typography>
+                <img
+                  src={`${BASE_URL}/uploads/${existingImage}`}
+                  alt="Current"
+                  style={{
+                    width: "150px",
+                    height: "auto",
+                    borderRadius: "8px",
+                  }}
+                />
+              </Grid>
+            )}
+
+            <Grid item xs={12}>
+              <Typography variant="body1" gutterBottom>
+                Generated Image
+              </Typography>
+              <Button
+                variant="outlined"
+                component="label"
+                htmlFor="image-upload"
+              >
+                Choose File
+                <input
+                  id="image-upload"
+                  type="file"
+                  name="image"
+                  accept="image/*"
+                  onChange={(event) =>
+                    formik.setFieldValue("image", event.currentTarget.files[0])
+                  }
+                  ref={fileInputRef}
+                  hidden
+                />
+              </Button>
+              {formik.values.image && (
+                <Typography
+                  variant="body2"
+                  color="textSecondary"
+                  sx={{ mt: 1 }}
+                >
+                  {formik.values.image.name}
+                </Typography>
+              )}
             </Grid>
 
             {/* Active Switch */}

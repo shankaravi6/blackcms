@@ -312,7 +312,7 @@ app.get("/api/data/premdata/cate/:category", async (req, res) => {
       .find({
         category: { $regex: new RegExp(`^${category}$`, "i") },
       })
-      .select("title category price");
+      .select("title category price imageName");
 
     if (data.length > 0) {
       res.json({ status: true, data });

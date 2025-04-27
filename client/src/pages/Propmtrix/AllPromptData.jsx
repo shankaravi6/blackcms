@@ -48,7 +48,7 @@ const AllPromptData = () => {
 
         if (data.length > 0) {
           const dynamicColumns = Object.keys(data[0])
-            .filter((key) => key !== "__v" && key !== "imageName")
+            .filter((key) => key !== "__v")
             .map((key) => {
               if (key === "_id" || key === "imageUrl") return null;
               return {
